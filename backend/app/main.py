@@ -6,12 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.core.database import Base, engine
+from app.core.database import (
+    Base,
+    engine,
+    ensure_candidate_embedding_schema,
+    ensure_pgvector_extension,
+)
 from app.core.logger import logger
 from app.routes import auth, candidates, jd_analyzer, recruiters
 
-# Create database tables
+# Initialize pgvector and create database tables
+ensure_pgvector_extension()
 Base.metadata.create_all(bind=engine)
+ensure_candidate_embedding_schema()
 
 # Initialize FastAPI app
 app = FastAPI(

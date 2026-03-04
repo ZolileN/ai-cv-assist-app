@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import logging
 
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models import Candidate, Experience
+from app.services.openai_client import generate_embedding
 from app.schemas import (
     CandidateCreate,
     CandidateUpdate,
@@ -16,6 +18,16 @@ from app.schemas import (
 )
 
 router = APIRouter(prefix="/api/candidates", tags=["candidates"])
+logger = logging.getLogger(__name__)
+
+
+def _candidate_embedding_text(payload: dict) -> str:
+    parts = [
+        str(payload.get("title", "")).strip(),
+        str(payload.get("summary", "")).strip(),
+        str(payload.get("location", "")).strip(),
+    ]
+    return " | ".join([p for p in parts if p])
 
 
 @router.post("/", response_model=CandidateResponse)
@@ -25,7 +37,17 @@ def create_candidate(
     db: Session = Depends(get_db),
 ):
     """Create a new candidate profile"""
-    candidate = Candidate(user_id=current_user["user_id"], **candidate_create.model_dump())
+    candidate_data = candidate_create.model_dump()
+    candidate = Candidate(user_id=current_user["user_id"], **candidate_data)
+
+    embedding_text = _candidate_embedding_text(candidate_data)
+    if embedding_text:
+        try:
+            embedding_data = generate_embedding(embedding_text)
+            candidate.embedding = embedding_data.get("embedding")
+        except Exception as exc:
+            logger.warning("Candidate embedding generation failed on create: %s", exc)
+
     db.add(candidate)
     db.commit()
     db.refresh(candidate)
@@ -78,6 +100,22 @@ def update_candidate(
     update_data = candidate_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(candidate, key, value)
+
+    # Refresh embedding if any text source fields changed.
+    if any(field in update_data for field in ("title", "summary", "location")):
+        embedding_text = _candidate_embedding_text(
+            {
+                "title": candidate.title,
+                "summary": candidate.summary,
+                "location": candidate.location,
+            }
+        )
+        if embedding_text:
+            try:
+                embedding_data = generate_embedding(embedding_text)
+                candidate.embedding = embedding_data.get("embedding")
+            except Exception as exc:
+                logger.warning("Candidate embedding generation failed on update: %s", exc)
 
     db.commit()
     db.refresh(candidate)
