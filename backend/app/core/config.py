@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     app_name: str = "AI CV App"
     version: str = "1.0.0"
     
+    # AI
+    openai_api_key: str = ""
+    
     class Config:
         env_file = ".env"
         case_sensitive = False

@@ -11,13 +11,23 @@ from app.core.database import (
     engine,
     ensure_candidate_embedding_schema,
     ensure_pgvector_extension,
+    is_pgvector_available,
 )
 from app.core.logger import logger
 from app.routes import auth, candidates, jd_analyzer, matching, recruiters
 
 # Initialize pgvector and create database tables
 ensure_pgvector_extension()
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as exc:
+    # Allow app startup when pgvector is missing on PostgreSQL host.
+    if is_pgvector_available():
+        raise
+    logger.warning(
+        "Database auto-create partially skipped because pgvector is unavailable: %s",
+        exc,
+    )
 ensure_candidate_embedding_schema()
 
 # Initialize FastAPI app

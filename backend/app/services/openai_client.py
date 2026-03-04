@@ -4,14 +4,25 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is not set in environment")
+_client: Optional[OpenAI] = None
 
-_client = OpenAI(api_key=OPENAI_API_KEY)
+
+def _get_client() -> OpenAI:
+    """Lazily initialize OpenAI client so app startup doesn't fail without API key."""
+    global _client
+    if _client is not None:
+        return _client
+
+    api_key = os.getenv("OPENAI_API_KEY") or settings.openai_api_key
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set in environment")
+
+    _client = OpenAI(api_key=api_key)
+    return _client
 
 
 def _safe_parse_json(text: str) -> Optional[Dict[str, Any]]:
@@ -42,7 +53,8 @@ def rewrite_bullet(text: str) -> Dict[str, Any]:
         f"Input: {text}"
     )
 
-    resp = _client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], max_tokens=400)
+    client = _get_client()
+    resp = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], max_tokens=400)
     raw = resp.choices[0].message.content
     parsed = _safe_parse_json(raw.strip()) if raw else None
 
@@ -81,7 +93,8 @@ def analyze_job_description(text: str) -> Dict[str, Any]:
         f"{schema_instructions}\n\nJob description:\n{text}"
     )
 
-    resp = _client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], max_tokens=700)
+    client = _get_client()
+    resp = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], max_tokens=700)
     raw = resp.choices[0].message.content
     parsed = _safe_parse_json(raw.strip()) if raw else None
 
@@ -106,7 +119,8 @@ def generate_embedding(text: str) -> Dict[str, Any]:
     Returns dict: { embedding: [float], model: str, usage: {...} }
     """
     try:
-        resp = _client.embeddings.create(model="text-embedding-3-small", input=text)
+        client = _get_client()
+        resp = client.embeddings.create(model="text-embedding-3-small", input=text)
         # resp.data is a list; take first item
         data = resp.data[0]
         return {

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Set
 
-from app.core.database import SessionLocal
+from app.core.database import SessionLocal, is_pgvector_available
 from app.models import Candidate
 from app.services.openai_client import generate_embedding
 
@@ -47,6 +47,8 @@ def match_candidates(job_description_text: str) -> List[Dict[str, Any]]:
     3) Return top 10 ranked by cosine similarity.
     """
     if not job_description_text or not job_description_text.strip():
+        return []
+    if not is_pgvector_available():
         return []
 
     embedding_payload = generate_embedding(job_description_text)

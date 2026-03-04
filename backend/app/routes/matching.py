@@ -1,8 +1,9 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from app.core.database import is_pgvector_available
 from app.core.security import get_current_user
 from app.services.candidate_matching import match_candidates
 
@@ -32,4 +33,9 @@ def match_job_to_candidates(
 ):
     """Match candidates against a job description and return top results."""
     _ = current_user  # enforce auth dependency
+    if not is_pgvector_available():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Candidate matching is unavailable because pgvector is not installed on PostgreSQL.",
+        )
     return match_candidates(payload.job_description_text)

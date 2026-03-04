@@ -4,10 +4,10 @@ export default function Home() {
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
-            AI CV App
+            AI-powered career positioning intelligence
           </h1>
           <p className="mt-3 text-lg text-slate-600">
-            Choose your portal to continue.
+            Candidates build standout CVs | Recruiters find top talent fast.
           </p>
         </div>
 

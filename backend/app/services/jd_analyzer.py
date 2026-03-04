@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field, ValidationError
 
-from .openai_client import _client, _safe_parse_json
+from .openai_client import _get_client, _safe_parse_json
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,8 @@ def analyze_jd(text: str) -> Dict[str, Any]:
 
     raw = None
     try:
-        resp = _client.chat.completions.create(
+        client = _get_client()
+        resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
