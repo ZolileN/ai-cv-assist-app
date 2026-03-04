@@ -13,7 +13,7 @@ from app.core.database import (
     ensure_pgvector_extension,
 )
 from app.core.logger import logger
-from app.routes import auth, candidates, jd_analyzer, recruiters
+from app.routes import auth, candidates, jd_analyzer, matching, recruiters
 
 # Initialize pgvector and create database tables
 ensure_pgvector_extension()
@@ -54,6 +54,7 @@ app.include_router(auth.router)
 app.include_router(candidates.router)
 app.include_router(recruiters.router)
 app.include_router(jd_analyzer.router)
+app.include_router(matching.router)
 
 
 # Root endpoints
