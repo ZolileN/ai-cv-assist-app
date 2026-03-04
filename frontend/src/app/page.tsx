@@ -1,49 +1,62 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Welcome to AI CV App
+    <main className="min-h-screen bg-gradient-to-br from-slate-100 via-teal-50 to-cyan-100">
+      <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
+            AI CV App
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Connect candidates with recruiters and manage job opportunities
+          <p className="mt-3 text-lg text-slate-600">
+            Choose your portal to continue.
           </p>
-          <div className="flex justify-center gap-4">
-            <a
-              href="auth/register"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-medium"
-            >
-              Get Started
-            </a>
-            <a
-              href="auth/login"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg border border-blue-600 hover:bg-blue-50 font-medium"
-            >
-              Login
-            </a>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-900">Candidate Login</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Build your CV, manage experience, and improve profile quality.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <a
+                href="/auth/login?role=candidate"
+                className="rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+              >
+                Candidate Login
+              </a>
+              <a
+                href="/auth/register?role=candidate"
+                className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Candidate Register
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-900">Recruiter Login</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Paste job descriptions, run matching, and review ranked candidate fit.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <a
+                href="/auth/login?role=recruiter"
+                className="rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-900"
+              >
+                Recruiter Login
+              </a>
+              <a
+                href="/auth/register?role=recruiter"
+                className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Recruiter Register
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">For Candidates</h2>
-            <p className="text-gray-600">
-              Create your professional profile, manage your work experience, and connect with recruiters.
-            </p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">For Recruiters</h2>
-            <p className="text-gray-600">
-              Post job descriptions, find qualified candidates, and manage your hiring process.
-            </p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Secure & Fast</h2>
-            <p className="text-gray-600">
-              JWT-based authentication, PostgreSQL database, and modern tech stack for reliability.
-            </p>
-          </div>
+        <div className="mt-8 rounded-xl border border-slate-200 bg-white/80 p-4 text-center text-sm text-slate-600">
+          Need to compare candidate quality quickly? Use the recruiter dashboard after login.
         </div>
       </div>
     </main>
