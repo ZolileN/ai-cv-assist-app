@@ -33,7 +33,7 @@ export default function Navbar() {
     `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
       pathname === href
         ? 'bg-cyan-500/15 text-cyan-200'
-        : 'text-slate-200 hover:bg-slate-800 hover:text-white'
+        : 'text-slate-200 hover:bg-slate-800 hover:text-slate-200'
     }`;
 
   return (
@@ -71,13 +71,13 @@ export default function Navbar() {
               <>
                 <Link
                   href="/auth/login"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-slate-200"
                 >
                   Login
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400"
+                  className="rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 hover:text-slate-950"
                 >
                   Register
                 </Link>
@@ -126,14 +126,14 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/auth/login"
-                    className="block rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white"
+                    className="block rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-slate-200"
                     onClick={() => setMobileOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="mx-3 mt-1 block rounded-md bg-cyan-500 px-3 py-2 text-center text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400"
+                    className="mx-3 mt-1 block rounded-md bg-cyan-500 px-3 py-2 text-center text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 hover:text-slate-950"
                     onClick={() => setMobileOpen(false)}
                   >
                     Register
