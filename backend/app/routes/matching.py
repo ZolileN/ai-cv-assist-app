@@ -16,7 +16,11 @@ class MatchRequest(BaseModel):
 class MatchItem(BaseModel):
     rank: int
     candidate_id: int
-    title: str
+    candidate_name: str
+    match_percentage: float
+    years_experience: float
+    skills: List[str] = Field(default_factory=list)
+    title: str | None = None
     location: str | None = None
     cosine_similarity: float
 

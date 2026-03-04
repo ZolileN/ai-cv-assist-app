@@ -35,6 +35,9 @@ export default function Navbar() {
                 <Link href="/dashboard" className="hover:text-blue-100">
                   Dashboard
                 </Link>
+                <Link href="/recruiter-dashboard" className="hover:text-blue-100">
+                  Recruiter Dashboard
+                </Link>
                 <Link href="/cv-builder" className="px-3 py-1 hover:underline">
                   Build CV
                 </Link>

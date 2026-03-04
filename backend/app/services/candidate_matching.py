@@ -1,8 +1,40 @@
-from typing import Any, Dict, List
+from datetime import datetime
+from typing import Any, Dict, List, Set
 
 from app.core.database import SessionLocal
 from app.models import Candidate
 from app.services.openai_client import generate_embedding
+
+
+def _estimate_years_experience(candidate: Candidate) -> float:
+    experiences = getattr(candidate, "experiences", []) or []
+    if not experiences:
+        return 0.0
+
+    start_dates = [exp.start_date for exp in experiences if exp.start_date]
+    if not start_dates:
+        return 0.0
+
+    earliest_start = min(start_dates)
+    latest_end = max(
+        [(exp.end_date or datetime.utcnow()) for exp in experiences if exp.start_date],
+        default=datetime.utcnow(),
+    )
+    delta_days = max(0, (latest_end - earliest_start).days)
+    return round(delta_days / 365.25, 1)
+
+
+def _extract_candidate_skills(candidate: Candidate) -> List[str]:
+    skills: Set[str] = set()
+    if candidate.title:
+        skills.add(candidate.title.strip())
+
+    experiences = getattr(candidate, "experiences", []) or []
+    for exp in experiences:
+        if exp.position:
+            skills.add(exp.position.strip())
+
+    return sorted(s for s in skills if s)[:8]
 
 
 def match_candidates(job_description_text: str) -> List[Dict[str, Any]]:
@@ -38,10 +70,20 @@ def match_candidates(job_description_text: str) -> List[Dict[str, Any]]:
         for rank, (candidate, distance) in enumerate(rows, start=1):
             distance_value = float(distance) if distance is not None else 1.0
             similarity = max(0.0, min(1.0, 1.0 - distance_value))
+            user = getattr(candidate, "user", None)
+            candidate_name = (
+                getattr(user, "full_name", None)
+                or candidate.title
+                or f"Candidate {candidate.id}"
+            )
             matches.append(
                 {
                     "rank": rank,
                     "candidate_id": candidate.id,
+                    "candidate_name": candidate_name,
+                    "match_percentage": round(similarity * 100, 2),
+                    "years_experience": _estimate_years_experience(candidate),
+                    "skills": _extract_candidate_skills(candidate),
                     "title": candidate.title,
                     "location": candidate.location,
                     "cosine_similarity": round(similarity, 6),
