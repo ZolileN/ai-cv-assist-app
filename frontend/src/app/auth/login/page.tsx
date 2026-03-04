@@ -1,7 +1,16 @@
-'use client';
-
 import Link from 'next/link';
-import LoginForm from '@/components/LoginForm';
+import dynamic from 'next/dynamic';
+
+const LoginForm = dynamic(() => import('@/components/LoginForm'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-5">
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-slate-800" />
+    </div>
+  ),
+});
 
 export default function LoginPage() {
   return (

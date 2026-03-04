@@ -1,7 +1,18 @@
-'use client';
-
 import Link from 'next/link';
-import RegisterForm from '@/components/RegisterForm';
+import dynamic from 'next/dynamic';
+
+const RegisterForm = dynamic(() => import('@/components/RegisterForm'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-5">
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-24 animate-pulse rounded-lg bg-slate-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-slate-800" />
+    </div>
+  ),
+});
 
 export default function RegisterPage() {
   return (

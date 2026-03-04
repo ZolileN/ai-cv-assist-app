@@ -10,8 +10,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const [user, setUser] = React.useState<any>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setMounted(true);
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
   }, []);
@@ -31,7 +33,7 @@ export default function Navbar() {
 
   const linkClass = (href: string) =>
     `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-      pathname === href
+      mounted && pathname === href
         ? 'bg-cyan-500/15 text-cyan-200'
         : 'text-slate-200 hover:bg-slate-800 hover:text-slate-200'
     }`;
@@ -46,7 +48,7 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-2 md:flex">
-            {user &&
+            {mounted && user &&
               navItems.map((item) => (
                 <Link key={item.href} href={item.href} className={linkClass(item.href)}>
                   {item.label}
@@ -55,7 +57,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
-            {user ? (
+            {mounted && user ? (
               <>
                 <span className="max-w-[180px] truncate rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-300">
                   {user.full_name}
@@ -100,7 +102,7 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="border-t border-slate-800 py-3 md:hidden">
             <div className="space-y-1">
-              {user &&
+              {mounted && user &&
                 navItems.map((item) => (
                   <Link
                     key={item.href}
@@ -112,7 +114,7 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-              {user ? (
+              {mounted && user ? (
                 <>
                   <p className="px-3 py-2 text-xs font-medium text-slate-400">{user.full_name}</p>
                   <button
