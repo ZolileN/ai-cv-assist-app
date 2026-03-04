@@ -1,0 +1,12 @@
+# Project root .gitignore
+.DS_Store
+.env
+.env.local
+*.log
+.vscode/
+.idea/
+__pycache__/
+node_modules/
+.next/
+dist/
+build/

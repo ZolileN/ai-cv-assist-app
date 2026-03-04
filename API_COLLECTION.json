@@ -1,0 +1,500 @@
+{
+  "info": {
+    "name": "AI CV App API",
+    "description": "Collection of all API endpoints for AI CV App",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"full_name\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Candidates",
+      "item": [
+        {
+          "name": "Create Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Engineer\",\n  \"summary\": \"Experienced full-stack developer\",\n  \"phone\": \"+1-555-0123\",\n  \"location\": \"San Francisco, CA\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", ""]
+            }
+          }
+        },
+        {
+          "name": "List Candidates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Candidate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Candidate",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Staff Software Engineer\",\n  \"location\": \"New York, NY\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Candidate",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Experiences",
+      "item": [
+        {
+          "name": "Add Experience",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Tech Corp\",\n  \"position\": \"Senior Engineer\",\n  \"description\": \"Led development of microservices\",\n  \"start_date\": \"2020-01-15T00:00:00\",\n  \"end_date\": null,\n  \"is_current\": \"true\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/1/experiences",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "1", "experiences"]
+            }
+          }
+        },
+        {
+          "name": "List Experiences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/1/experiences",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "1", "experiences"]
+            }
+          }
+        },
+        {
+          "name": "Update Experience",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Staff Engineer\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/experiences/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "experiences", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Experience",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/candidates/experiences/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "candidates", "experiences", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recruiters",
+      "item": [
+        {
+          "name": "Create Recruiter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"TechJobs Inc\",\n  \"phone\": \"+1-555-9876\",\n  \"website\": \"https://techjobs.com\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", ""]
+            }
+          }
+        },
+        {
+          "name": "List Recruiters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Recruiter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Recruiter",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"TechJobs Global\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Recruiter",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Create Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Engineer\",\n  \"description\": \"We are looking for experienced engineers\",\n  \"required_skills\": \"Python, FastAPI, PostgreSQL\",\n  \"experience_required\": 5,\n  \"salary_min\": 120000,\n  \"salary_max\": 180000,\n  \"location\": \"Remote\",\n  \"is_active\": \"true\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/1/jobs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "1", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "List Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/1/jobs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "1", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Principal Engineer\",\n  \"salary_max\": 200000\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/jobs/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "jobs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/recruiters/jobs/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "recruiters", "jobs", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/",
+              "host": ["{{BASE_URL}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "TOKEN",
+      "value": ""
+    }
+  ]
+}

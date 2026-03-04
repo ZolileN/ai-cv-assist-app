@@ -1,0 +1,21 @@
+# Backend
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.vscode/
+.idea/
+*.db
+*.sqlite
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/

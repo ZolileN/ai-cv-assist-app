@@ -1,0 +1,72 @@
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai_cv_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-ai_cv_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-ai_cv_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_cv_backend
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-user}:${DB_PASSWORD:-password}@postgres:5432/${DB_NAME:-ai_cv_db}
+      SECRET_KEY: ${SECRET_KEY:-your-super-secret-key-change-in-production}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      DEBUG: ${DEBUG:-False}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    networks:
+      - app_network
+    restart: unless-stopped
+    command: >
+      sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_cv_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - app_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
