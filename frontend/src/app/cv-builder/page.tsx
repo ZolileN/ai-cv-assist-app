@@ -29,7 +29,7 @@ export default function CVBuilderPage() {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CVFormValues>({
     defaultValues: {
       experiences: [
@@ -49,6 +49,11 @@ export default function CVBuilderPage() {
     name: "experiences",
     control,
   });
+
+  const inputClass =
+    "w-full rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20";
+  const labelClass = "mb-2 block text-sm font-medium text-slate-200";
+  const errorClass = "mt-1 text-sm text-rose-300";
 
   const onSubmit = async (data: CVFormValues) => {
     try {
@@ -77,163 +82,186 @@ export default function CVBuilderPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CV builder</h1>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block font-medium">Name</label>
+    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl rounded-2xl border border-slate-700/60 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur sm:p-8">
+        <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-cyan-300">
+          TalentSignal
+        </p>
+        <h1 className="mb-2 text-center text-3xl font-bold text-white">CV Builder</h1>
+        <p className="mb-8 text-center text-sm text-slate-400">
+          Structure your experience with measurable impact for stronger recruiter visibility.
+        </p>
+
+        {error && (
+          <div className="mb-5 rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div>
+            <label className={labelClass}>Name</label>
           <input
             {...register("name", { required: "Name is required" })}
-            className="w-full border p-2 rounded"
+            className={inputClass}
+            placeholder="Your full name"
           />
-          {errors.name && (
-            <p className="text-red-500">{errors.name.message}</p>
-          )}
-        </div>
+            {errors.name && <p className={errorClass}>{errors.name.message}</p>}
+          </div>
 
-        <div>
-          <label className="block font-medium">Location</label>
+          <div>
+            <label className={labelClass}>Location</label>
           <input
             {...register("location", { required: "Location is required" })}
-            className="w-full border p-2 rounded"
+            className={inputClass}
+            placeholder="City, Country"
           />
-          {errors.location && (
-            <p className="text-red-500">{errors.location.message}</p>
-          )}
-        </div>
+            {errors.location && <p className={errorClass}>{errors.location.message}</p>}
+          </div>
 
-        <div>
-          <label className="block font-medium">Years of experience</label>
+          <div>
+            <label className={labelClass}>Years of experience</label>
           <input
             type="number"
             {...register("years_experience", {
               valueAsNumber: true,
               min: 0,
             })}
-            className="w-full border p-2 rounded"
+            className={inputClass}
+            placeholder="0"
           />
-        </div>
+          </div>
 
-        <div>
-          <label className="block font-medium">Desired role</label>
+          <div>
+            <label className={labelClass}>Desired role</label>
           <input
             {...register("desired_role", {
               required: "Desired role is required",
             })}
-            className="w-full border p-2 rounded"
+            className={inputClass}
+            placeholder="e.g., Senior Backend Engineer"
           />
           {errors.desired_role && (
-            <p className="text-red-500">{errors.desired_role.message}</p>
+              <p className={errorClass}>{errors.desired_role.message}</p>
           )}
-        </div>
+          </div>
 
-        <fieldset className="border rounded p-4">
-          <legend className="font-semibold">Work experience</legend>
+          <fieldset className="rounded-xl border border-slate-700 bg-slate-950/50 p-5">
+            <legend className="px-2 text-sm font-semibold uppercase tracking-wide text-cyan-300">
+              Work Experience
+            </legend>
 
-          {fields.map((field, idx) => (
-            <div
-              key={field.id}
-              className="mb-4 border-b pb-2"
-            >
-              <div className="flex justify-between items-center">
-                <h4 className="font-medium">Job {idx + 1}</h4>
+            {fields.map((field, idx) => (
+              <div
+                key={field.id}
+                className="mb-4 rounded-lg border border-slate-700/70 bg-slate-900/60 p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold text-slate-200">Job {idx + 1}</h4>
                 <button
                   type="button"
                   onClick={() => remove(idx)}
-                  className="text-red-600 hover:underline"
+                  className="rounded-md border border-rose-500/40 px-2.5 py-1 text-xs font-medium text-rose-300 transition-colors hover:bg-rose-500/10"
                 >
                   Remove
                 </button>
-              </div>
+                </div>
 
-              <div className="mt-2 space-y-2">
-                <div>
-                  <label className="block text-sm">Job title</label>
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <label className={labelClass}>Job title</label>
                   <input
                     {...register(`experiences.${idx}.job_title` as const, {
                       required: true,
                     })}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="Role title"
                   />
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm">Company</label>
+                  <div>
+                    <label className={labelClass}>Company</label>
                   <input
                     {...register(`experiences.${idx}.company` as const, {
                       required: true,
                     })}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="Company name"
                   />
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm">Duration</label>
+                  <div>
+                    <label className={labelClass}>Duration</label>
                   <input
                     {...register(`experiences.${idx}.duration` as const, {
                       required: true,
                     })}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="e.g., Jan 2021 - Dec 2023"
                   />
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm">Responsibilities</label>
+                  <div>
+                    <label className={labelClass}>Responsibilities</label>
                   <textarea
                     {...register(
                       `experiences.${idx}.responsibilities` as const
                     )}
                     rows={3}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="Scope, ownership, and key responsibilities"
                   />
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm">Achievements</label>
+                  <div>
+                    <label className={labelClass}>Achievements</label>
                   <textarea
                     {...register(`experiences.${idx}.achievements` as const)}
                     rows={3}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="Quantified outcomes and notable wins"
                   />
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm">Tools used</label>
+                  <div>
+                    <label className={labelClass}>Tools used</label>
                   <input
                     {...register(`experiences.${idx}.tools` as const)}
-                    className="w-full border p-1 rounded"
+                    className={inputClass}
+                    placeholder="Comma-separated tools, frameworks, platforms"
                   />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+
+            <button
+              type="button"
+              onClick={() =>
+                append({
+                  job_title: "",
+                  company: "",
+                  duration: "",
+                  responsibilities: "",
+                  achievements: "",
+                  tools: "",
+                })
+              }
+              className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-700 sm:w-auto"
+            >
+              Add job
+            </button>
+          </fieldset>
 
           <button
-            type="button"
-            onClick={() =>
-              append({
-                job_title: "",
-                company: "",
-                duration: "",
-                responsibilities: "",
-                achievements: "",
-                tools: "",
-              })
-            }
-            className="mt-2 px-3 py-1 bg-blue-600 text-white rounded"
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-lg bg-cyan-500 px-4 py-2.5 font-semibold text-slate-950 transition-colors hover:bg-cyan-400 hover:text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-200"
           >
-            Add job
+            {isSubmitting ? "Saving..." : "Save CV"}
           </button>
-        </fieldset>
-
-        <button
-          type="submit"
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Save CV
-        </button>
-      </form>
-    </div>
+        </form>
+      </div>
+    </main>
   );
 }
