@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.core.logger import logger
-from app.routes import auth, candidates, recruiters
+from app.routes import auth, candidates, jd_analyzer, recruiters
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -46,6 +46,7 @@ async def add_process_time_header(request, call_next):
 app.include_router(auth.router)
 app.include_router(candidates.router)
 app.include_router(recruiters.router)
+app.include_router(jd_analyzer.router)
 
 
 # Root endpoints
