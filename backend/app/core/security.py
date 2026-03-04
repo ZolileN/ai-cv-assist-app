@@ -1,27 +1,58 @@
 from datetime import datetime, timedelta
 from typing import Optional
+
+import bcrypt
+import hashlib
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import settings
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # JWT
 security = HTTPBearer()
 
+def _prehash_password(password: str) -> bytes:
+    """
+    Pre-hash password so bcrypt input is fixed-size and avoids 72-byte limit.
+    """
+    return hashlib.sha256(password.encode("utf-8")).hexdigest().encode("utf-8")
+
 
 def hash_password(password: str) -> str:
-    """Hash a password using bcrypt"""
-    return pwd_context.hash(password)
+    """Hash a password using bcrypt over SHA-256 prehash."""
+    hashed = bcrypt.hashpw(_prehash_password(password), bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    """
+    Verify a password against stored hash.
+    Supports:
+    - current scheme: bcrypt(SHA-256(password))
+    - legacy scheme: raw bcrypt(password) for previously stored hashes
+    """
+    try:
+        hash_bytes = hashed_password.encode("utf-8")
+    except Exception:
+        return False
+
+    try:
+        # First, verify against current scheme.
+        if bcrypt.checkpw(_prehash_password(plain_password), hash_bytes):
+            return True
+    except Exception:
+        pass
+
+    # Backward compatibility: old hashes may be raw bcrypt(password).
+    try:
+        plain_bytes = plain_password.encode("utf-8")
+        if len(plain_bytes) <= 72 and bcrypt.checkpw(plain_bytes, hash_bytes):
+            return True
+    except Exception:
+        pass
+
+    return False
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
