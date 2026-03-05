@@ -55,23 +55,32 @@ def ensure_candidate_embedding_schema() -> None:
     Ensure existing databases have the candidate embedding column and index.
     Safe for repeated calls.
     """
-    if not _is_postgres() or not _pgvector_available:
-        return
     try:
         with engine.begin() as conn:
-            conn.execute(
-                text(
-                    "ALTER TABLE IF EXISTS candidates "
-                    "ADD COLUMN IF NOT EXISTS embedding vector(1536)"
-                )
-            )
-            conn.execute(
-                text(
-                    "CREATE INDEX IF NOT EXISTS idx_candidates_embedding_cosine "
-                    "ON candidates USING ivfflat (embedding vector_cosine_ops) "
-                    "WITH (lists = 100)"
-                )
-            )
+            # Keep schema compatible even when pgvector is unavailable.
+            # Without this, ORM SELECTs that include candidates.embedding fail.
+            if _is_postgres():
+                if _pgvector_available:
+                    conn.execute(
+                        text(
+                            "ALTER TABLE IF EXISTS candidates "
+                            "ADD COLUMN IF NOT EXISTS embedding vector(1536)"
+                        )
+                    )
+                    conn.execute(
+                        text(
+                            "CREATE INDEX IF NOT EXISTS idx_candidates_embedding_cosine "
+                            "ON candidates USING ivfflat (embedding vector_cosine_ops) "
+                            "WITH (lists = 100)"
+                        )
+                    )
+                else:
+                    conn.execute(
+                        text(
+                            "ALTER TABLE IF EXISTS candidates "
+                            "ADD COLUMN IF NOT EXISTS embedding TEXT"
+                        )
+                    )
     except SQLAlchemyError as exc:
         logger.warning("Failed to ensure candidate embedding schema: %s", exc)
 

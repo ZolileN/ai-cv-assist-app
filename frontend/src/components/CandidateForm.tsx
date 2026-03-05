@@ -15,12 +15,14 @@ interface CandidateFormData {
 interface CandidateFormProps {
   candidate?: Candidate;
   onSuccess?: () => void;
+  clearAfterSave?: boolean;
 }
 
-export default function CandidateForm({ candidate, onSuccess }: CandidateFormProps) {
+export default function CandidateForm({ candidate, onSuccess, clearAfterSave = false }: CandidateFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<CandidateFormData>({
     defaultValues: candidate || {},
@@ -30,6 +32,18 @@ export default function CandidateForm({ candidate, onSuccess }: CandidateFormPro
     'w-full rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20';
   const labelClass = 'mb-2 block text-sm font-medium text-slate-200';
   const errorClass = 'mt-1 text-sm text-rose-300';
+  const initializedFromCandidate = React.useRef(false);
+
+  React.useEffect(() => {
+    if (clearAfterSave) {
+      if (!initializedFromCandidate.current && candidate) {
+        reset(candidate);
+        initializedFromCandidate.current = true;
+      }
+      return;
+    }
+    reset(candidate || { title: '', summary: '', phone: '', location: '' });
+  }, [candidate, reset, clearAfterSave]);
 
   const onSubmit = async (data: CandidateFormData) => {
     try {
@@ -37,9 +51,12 @@ export default function CandidateForm({ candidate, onSuccess }: CandidateFormPro
       if (candidate) {
         await api.put(`/api/candidates/${candidate.id}`, data);
       } else {
-        await api.post('/api/candidates/', data);
+        await api.post('/api/candidates', data);
       }
       onSuccess?.();
+      if (clearAfterSave) {
+        reset({ title: '', summary: '', phone: '', location: '' });
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to save candidate');
     }

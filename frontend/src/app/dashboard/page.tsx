@@ -4,21 +4,54 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/authService';
 import CandidateForm from '@/components/CandidateForm';
+import api from '@/lib/api';
+import { Candidate } from '@/types';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = React.useState<any>(null);
+  const [candidate, setCandidate] = React.useState<Candidate | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
 
+  const loadCandidateProfile = React.useCallback(async () => {
+    const response = await api.get('/api/candidates');
+    const profiles = Array.isArray(response.data) ? response.data : [];
+    setCandidate(profiles[0]);
+  }, []);
+
   React.useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (!currentUser) {
-      router.push('/auth/login');
-    } else {
+    let mounted = true;
+
+    const initialize = async () => {
+      const currentUser = authService.getCurrentUser();
+      if (!currentUser) {
+        router.replace('/auth/login');
+        return;
+      }
+
+      if (!mounted) return;
       setUser(currentUser);
       setLoading(false);
-    }
-  }, [router]);
+
+      // Best-effort profile refresh; do not bounce user on transient failures.
+      try {
+        const [me] = await Promise.all([
+          authService.getMe(),
+          loadCandidateProfile(),
+        ]);
+        if (!mounted) return;
+        setUser(me);
+      } catch {
+        // Keep dashboard accessible; request interceptor handles real 401 flows.
+      }
+    };
+
+    initialize();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router, loadCandidateProfile]);
 
   if (loading) {
     return (
@@ -43,7 +76,33 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
             <h2 className="mb-6 text-2xl font-bold text-white">Your Profile</h2>
-            <CandidateForm />
+            <CandidateForm candidate={candidate} onSuccess={loadCandidateProfile} clearAfterSave />
+
+            <div className="mt-8 rounded-xl border border-slate-700 bg-slate-950/40 p-5">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-300">Saved Profile</p>
+              {candidate ? (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-slate-400">Title</p>
+                    <p className="text-sm font-semibold text-white">{candidate.title}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">Summary</p>
+                    <p className="text-sm text-slate-200">{candidate.summary || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">Phone</p>
+                    <p className="text-sm text-slate-200">{candidate.phone || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">Location</p>
+                    <p className="text-sm text-slate-200">{candidate.location || 'Not set'}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-400">No saved profile yet.</p>
+              )}
+            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">

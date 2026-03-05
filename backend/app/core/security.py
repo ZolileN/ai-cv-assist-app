@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import logging
 
 import bcrypt
 import hashlib
@@ -9,8 +10,11 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
 # JWT
-security = HTTPBearer()
+# Use auto_error=False so we can return a consistent 401 for missing/invalid auth.
+security = HTTPBearer(auto_error=False)
 
 def _prehash_password(password: str) -> bytes:
     """
@@ -58,6 +62,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
     to_encode = data.copy()
+    if "sub" in to_encode:
+        to_encode["sub"] = str(to_encode["sub"])
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
@@ -71,8 +77,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+async def get_current_user(credentials: HTTPAuthorizationCredentials | None = Depends(security)) -> dict:
     """Get current user from JWT token"""
+    if credentials is None:
+        logger.warning("Auth failed: missing bearer credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+
     token = credentials.credentials
     try:
         payload = jwt.decode(
@@ -92,7 +105,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
                 detail="Invalid authentication credentials",
             )
         return {"user_id": user_id_int}
-    except JWTError:
+    except JWTError as exc:
+        logger.warning("Auth failed: invalid JWT (%s)", exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",

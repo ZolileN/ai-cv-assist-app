@@ -57,8 +57,8 @@ export default function CVBuilderPage() {
 
   const onSubmit = async (data: CVFormValues) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-      const token = localStorage.getItem("access_token") || "";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/backend";
+      const token = localStorage.getItem("token") || "";
 
       const res = await fetch(`${apiUrl}/api/candidates/create`, {
         method: "POST",

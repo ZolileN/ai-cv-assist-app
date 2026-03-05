@@ -43,7 +43,7 @@ class Settings(BaseSettings):
         Accept JSON array or comma-separated env values for ALLOWED_ORIGINS.
         """
         if isinstance(value, list):
-            return value
+            return [str(item).strip().rstrip("/") for item in value if str(item).strip()]
         if isinstance(value, str):
             raw = value.strip()
             if not raw:
@@ -52,10 +52,10 @@ class Settings(BaseSettings):
                 try:
                     parsed = json.loads(raw)
                     if isinstance(parsed, list):
-                        return parsed
+                        return [str(item).strip().rstrip("/") for item in parsed if str(item).strip()]
                 except Exception:
                     pass
-            return [item.strip() for item in raw.split(",") if item.strip()]
+            return [item.strip().rstrip("/") for item in raw.split(",") if item.strip()]
         return value
 
 

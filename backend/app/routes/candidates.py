@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import List
 import logging
@@ -30,6 +31,7 @@ def _candidate_embedding_text(payload: dict) -> str:
     return " | ".join([p for p in parts if p])
 
 
+@router.post("", response_model=CandidateResponse, include_in_schema=False)
 @router.post("/", response_model=CandidateResponse)
 def create_candidate(
     candidate_create: CandidateCreate,
@@ -38,7 +40,16 @@ def create_candidate(
 ):
     """Create a new candidate profile"""
     candidate_data = candidate_create.model_dump()
-    candidate = Candidate(user_id=current_user["user_id"], **candidate_data)
+    existing_candidate = (
+        db.query(Candidate)
+        .filter(Candidate.user_id == current_user["user_id"])
+        .order_by(Candidate.id.asc())
+        .first()
+    )
+
+    candidate = existing_candidate or Candidate(user_id=current_user["user_id"])
+    for key, value in candidate_data.items():
+        setattr(candidate, key, value)
 
     embedding_text = _candidate_embedding_text(candidate_data)
     if embedding_text and is_pgvector_available():
@@ -48,12 +59,22 @@ def create_candidate(
         except Exception as exc:
             logger.warning("Candidate embedding generation failed on create: %s", exc)
 
-    db.add(candidate)
-    db.commit()
-    db.refresh(candidate)
-    return candidate
+    try:
+        if not existing_candidate:
+            db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
+        return candidate
+    except SQLAlchemyError as exc:
+        db.rollback()
+        logger.error("Failed to create/update candidate profile: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to save candidate profile",
+        )
 
 
+@router.get("", response_model=List[CandidateResponse], include_in_schema=False)
 @router.get("/", response_model=List[CandidateResponse])
 def list_candidates(
     current_user: dict = Depends(get_current_user),
