@@ -77,32 +77,6 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
             <h2 className="mb-6 text-2xl font-bold text-white">Your Profile</h2>
             <CandidateForm candidate={candidate} onSuccess={loadCandidateProfile} clearAfterSave />
-
-            <div className="mt-8 rounded-xl border border-slate-700 bg-slate-950/40 p-5">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-300">Saved Profile</p>
-              {candidate ? (
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs text-slate-400">Title</p>
-                    <p className="text-sm font-semibold text-white">{candidate.title}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400">Summary</p>
-                    <p className="text-sm text-slate-200">{candidate.summary || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400">Phone</p>
-                    <p className="text-sm text-slate-200">{candidate.phone || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400">Location</p>
-                    <p className="text-sm text-slate-200">{candidate.location || 'Not set'}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-400">No saved profile yet.</p>
-              )}
-            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-700/60 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
@@ -119,6 +93,32 @@ export default function DashboardPage() {
               <div className="rounded-lg border border-slate-700 bg-slate-950/50 p-4">
                 <p className="text-sm text-slate-400">Status</p>
                 <p className="text-lg font-semibold text-slate-200">Profile active</p>
+              </div>
+
+              <div className="rounded-lg border border-slate-700 bg-slate-950/50 p-4">
+                <p className="mb-3 text-sm text-slate-400">Saved Profile</p>
+                {candidate ? (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-slate-500">Title</p>
+                      <p className="text-sm font-semibold text-white">{candidate.title}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Summary</p>
+                      <p className="text-sm text-slate-200">{candidate.summary || 'Not set'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Phone</p>
+                      <p className="text-sm text-slate-200">{candidate.phone || 'Not set'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Location</p>
+                      <p className="text-sm text-slate-200">{candidate.location || 'Not set'}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400">No saved profile yet.</p>
+                )}
               </div>
             </div>
           </div>
